@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div class="app">
     <header class='general-header'>
       <img src="@/assets/imgs/logo-text.png" alt="">
       <menu>
@@ -110,7 +110,7 @@
                 @click="removeChild(i)"
                 class="remove"
               >
-                удвлить
+                удалить
               </button>
             </li>
 
@@ -120,16 +120,47 @@
         
         <button 
             @click="addPerson"
+            class="save"
           >
             Сохранить
           </button>
       </section>
       <section
         v-else
+        class="data-output"
       >
-      {{person}}
+        <h2 v-if="!person" class="no-data">
+          Данные отсуствуют!
+        </h2>
+        <template v-else>
+          <h2>
+            Персональные данные
+          </h2>
+          <p class="data-person">{{ `${person.name} ${person.age}`}}</p>
+
+          <div 
+            v-if="person.children.length"
+            class="list-data-children"
+          >
+            <h2>
+              Дети
+            </h2>
+            <p 
+              v-for="(child, i) in person.children"
+              :key="i"
+              class="data-children"
+            >
+              <span>
+                {{ `${child.name} ${child.age}`}}
+              </span>
+            </p>
+          </div>
+        </template>      
       </section>
     </main>
+    <footer>
+      all rights reserved
+    </footer>
   </div>
 </template>
 
@@ -206,10 +237,15 @@ export default {
       this.newPerson.children = this.newPerson.children.filter((el, index) => i !== index)
     },
     addPerson(){
+      if (this.flagNewChildren) {
+        alert('Вызабыли сохранить ребёнка')
+        return;
+      }
       this.person = { ... this.newPerson }
       for (const prop in this.newPerson) {
         if (!this.newPerson[prop]) {
           alert('заполните все поля!');
+          this.newPerson = this.person
           this.person = null;
           return
         }
@@ -219,7 +255,7 @@ export default {
           this.newPerson[prop] = null
         }
       }
-
+      
       for(const prop in this.menuItems) {
         if (prop === 'personData'){
           this.menuItems[prop].active = true
@@ -255,6 +291,12 @@ export default {
     font-family: 'Montserrat', sans-serif;
     font-size: 14px;
     font-weight: 400;
+  }
+
+  .app {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
   }
 
   .general-header {
@@ -363,5 +405,56 @@ export default {
         color: rgba(1, 167, 253, 1);
       }
     }
+
+    .save {
+      color: white;
+      background: #01a7fd;
+      padding: 5px 15px;
+      border-radius: 21px;
+      border: solid 1px #01a7fd;
+      margin-top: 35px
+    }
+
+    .data-output {
+      padding-top: 30px;
+    }
+
+    .no-data{
+      margin-top: 30px;
+      text-align: center;
+      font-size: 30px;
+      font-weight: 500;
+      color: #01a7fd;
+    }
+
+    .data-person, .data-children {
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .data-person {
+      margin: 20px 0 60px;
+    }
+
+    .list-data-children {
+      .data-children {
+        margin-bottom: 20px;
+      }
+      .data-children:first-of-type {
+          margin-top:20px;
+        }
+
+      .data-children span {
+        background-color: rgba(241, 241, 241, 1);
+        display: inline-block;
+        padding: 10px 20px;
+      }
+    }
+  }
+  footer {
+    text-align: center;
+    background: rgba(250, 250, 250, 1);
+    padding: 30px 0;
+    margin-top: auto;
   }
 </style>
